@@ -1,14 +1,24 @@
 def da_boas_vindas
-    puts("bem vindo ao jogo da adivinhacao")
+    puts
+    puts "        P  /_\  P                              "
+    puts "       /_\_|_|_/_\                             "
+    puts "   n_n | ||. .|| | n_n         Bem vindo ao    "
+    puts "   |_|_|nnnn nnnn|_|_|     Jogo de Adivinhação!"
+    puts "  |' '  |  |_|  |'  ' |                        "
+    puts "  |_____| ' _ ' |_____|                        " 
+    puts "        \__|_|__/                              "
+    puts
     puts "Qual é o seu nome?"
-    nome = gets.strip 
-    #puts "\n\n\n\n\n\nCOmeçaremos o jogo pra vc, " + nome
-    puts "\n\n\n\n\n\nComeçaremos o jogo pra vc, #{nome}"
+    nome = gets.strip
+    puts "\n\n\n\n\n\n"
+    puts "Começaremos o jogo para você, #{nome}"
     nome
 end
 
 def pede_dificuldade
-    puts "Qual o nível de dificuldade? (1 fácil, 5 difícil)"
+    puts "Qual o nível de dificuldade?"
+    puts "(1) Muito fácil (2) Fácil (3) Normal (4) Difícil (5) Impossível"
+    puts "Escolha: "
     dificuldade = gets.to_i
 end
 
@@ -25,20 +35,14 @@ def sorteia_numero_secreto(dificuldade)
     else
         maximo = 200
     end
-    #maximo =  30, 60, 100, 150, 200
     puts "Escolhendo um número secreto entre 1 e #{maximo}..."
-    #puts "Escollhendo um número secreto entre 0 e 200"
-    #sorteado = 175
     sorteado = rand(maximo) + 1
     puts "Escolhido... que tal adivinhar nosso numero secreto\n\n\n\n\n"
-    #return sorteado
     sorteado
 end
 
 def pede_um_numero(chutes, tentativa, limite_de_tentativas)
-    #puts "Tentativa " + tentativa.to_s + " de " + limite_de_tentativas.to_s
     puts "Tentativa #{tentativa} de #{limite_de_tentativas}"
-    #puts "Chutes até agora: " + chutes.to_s
     puts "Chutes até agora: #{chutes}" 
     puts "Entre com um numero"
     chute = gets.strip
@@ -49,7 +53,7 @@ end
 def verifica_se_acertou(numero_secreto, chute)
     acertou = chute.to_i == numero_secreto
     if acertou
-        puts "Acertou!"
+        ganhou
         return true
     end
     maior = numero_secreto > chute
@@ -68,28 +72,16 @@ def joga(nome, dificuldade)
     limite_de_tentativas = 5
     for tentativa in 1..limite_de_tentativas
         chute = pede_um_numero(chutes, tentativa, limite_de_tentativas)
-        #chutes[chutes.size] = chute
         chutes << chute
-        #total_de_chutes += 1
         if nome == "Saulo"
-            puts "Acertou!"
+            ganhou
             break
         end
         puts "Será q acertou? vc chutou " + chute.to_s
-        #puts chute.to_i == numero_secreto
-        #Verificando se acertou
         diferenca = numero_secreto-chute
-        
         pontos_a_perder = (chute-numero_secreto).abs/2.0
-        #unless pontos_a_perder>0
-        #    pontos_a_perder *=-1
-        #end
         pontos_ate_agora -= pontos_a_perder
         break if verifica_se_acertou numero_secreto, chute
-        #if verifica_se_acertou numero_secreto, chute
-        #    break
-        #end
-        
     end
 
     puts "Você ganhou #{pontos_ate_agora} pontos!"
@@ -101,17 +93,34 @@ def nao_quero_jogar?
     nao_quero_jogar.upcase == "N"
 end
 
-=begin
-Mais de uma linha de comentário
-=end
-#total_de_chutes = 0
+def ganhou 
+    puts
+    puts "             OOOOOOOOOOO               "
+    puts "         OOOOOOOOOOOOOOOOOOO           "
+    puts "      OOOOOO  OOOOOOOOO  OOOOOO        "
+    puts "    OOOOOO      OOOOO      OOOOOO      "
+    puts "  OOOOOOOO  #   OOOOO  #   OOOOOOOO    "
+    puts " OOOOOOOOOO    OOOOOOO    OOOOOOOOOO   "
+    puts "OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO  "
+    puts "OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO  "
+    puts "OOOO  OOOOOOOOOOOOOOOOOOOOOOOOO  OOOO  "
+    puts " OOOO  OOOOOOOOOOOOOOOOOOOOOOO  OOOO   "
+    puts "  OOOO   OOOOOOOOOOOOOOOOOOOO  OOOO    "
+    puts "    OOOOO   OOOOOOOOOOOOOOO   OOOO     "
+    puts "      OOOOOO   OOOOOOOOO   OOOOOO      "
+    puts "         OOOOOO         OOOOOO         "
+    puts "             OOOOOOOOOOOO              "
+    puts
+    puts "               Acertou!                "
+    puts
+end
+
+
 nome = da_boas_vindas
 dificuldade = pede_dificuldade
-#while nao_quero_jogar
 loop do
     joga nome, dificuldade
     if nao_quero_jogar?
         break
     end
 end
-#end
