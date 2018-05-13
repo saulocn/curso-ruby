@@ -1,4 +1,5 @@
 require_relative 'ui'
+require_relative 'heroi'
 
 def le_mapa(numero)
     arquivo = "mapa#{numero}.txt"
@@ -11,50 +12,18 @@ end
 def encontra_jogador(mapa)
     caractere_do_heroi = "H"
     mapa.each_with_index do |linha_atual, linha|
-    #for linha = (0..mapa.size-1)
-        #linha_atual = mapa[linha]
         coluna_do_heroi = linha_atual.index caractere_do_heroi
-        # coluna_do_heroi == nil
         if coluna_do_heroi
-            return [linha, coluna_do_heroi]
+            jogador = Heroi.new
+            jogador.linha = linha
+            jogador.coluna = coluna_do_heroi
+            return jogador
         end
     end
     nil
 end
 
 
-def calcula_nova_posicao(heroi, direcao)
-=begin    
-    case direcao
-        when "W"
-            anda_linha += -1
-            anda_coluna += 0
-        when "S"
-            anda_linha += +1
-            anda_coluna += 0
-        when "A"
-            anda_linha += 0
-            anda_coluna += -1
-        when "D"
-            anda_linha += 0
-            anda_coluna += +1
-    end  
-    heroi[0] = anda_linha
-    heroi[1] = anda_coluna
-=end  
-    heroi = heroi.dup
-    movimentos = {
-        "W" => [-1, 0],
-        "S" => [+1, 0],
-        "A" => [0, -1],
-        "D" => [0, +1]
-    }
-    movimento = movimentos[direcao]
-    heroi[0] += movimento[0]
-    heroi[1] += movimento[1]
-    puts heroi
-    heroi
-end
 
 def posicao_valida?(mapa, posicao)
     linhas = mapa.size
@@ -86,27 +55,6 @@ def posicoes_validas_a_partir_de(mapa, novo_mapa, posicao)
             posicoes << nova_posicao
         end 
     end
-=begin
-    baixo = [posicao[0]+1, posicao[1]]
-    if posicao_valida?(mapa, baixo) && posicao_valida?(novo_mapa, baixo)
-        posicoes << baixo
-    end
-    cima = [posicao[0]-1, posicao[1]]
-
-    if posicao_valida?(mapa, cima) && posicao_valida?(novo_mapa, cima)
-        posicoes << cima
-    end
-    direita = [posicao[0], posicao[1]+1]
-
-    if posicao_valida?(mapa, direita) && posicao_valida?(novo_mapa, direita)
-        posicoes << direita
-    end
-    esquerda = [posicao[0], posicao[1]-1]
-
-    if posicao_valida?(mapa, esquerda) && posicao_valida?(novo_mapa, esquerda)
-        posicoes << esquerda
-    end
-=end
     posicoes
 end
 
@@ -120,22 +68,6 @@ def move_fantasma(mapa, novo_mapa, linha, coluna)
 end
 
 def copia_mapa mapa
-=begin        
-    novo_mapa = []
-    mapa.each do |linha|
-        nova_linha = linha.dup.tr "F", " "
-        novo_mapa << nova_linha
-        nova_linha = ""
-        linha.each do |caractere|
-            if caractere == "F"
-                nova_linha << " "
-            else
-                nova_linha << "F"
-            end
-        end
-        novo_mapa << nova_linha
-    end
-=end
     novo_mapa = mapa.join("\n").tr("F", " ").split "\n"
     novo_mapa
 end
@@ -159,18 +91,35 @@ def jogador_perdeu?(mapa)
     perdeu = !encontra_jogador(mapa)
 end
 
+def executa_remocao(mapa, posicao, quantidade)
+    if mapa[posicao.linha][posicao.coluna] == "X"
+        return
+    end
+    posicao.remove_do mapa
+    remove mapa, posicao, quantidade-1
+end
+
+def remove(mapa, posicao, quantidade)
+    #return if(quantidade==0)
+    return unless quantidade > 0
+    executa_remocao mapa, posicao.direita, quantidade
+end
+
 def joga(nome)
-    mapa = le_mapa 2
+    mapa = le_mapa 3
     while true
         desenha mapa
         direcao = pede_movimento 
         heroi = encontra_jogador mapa
-        nova_posicao = calcula_nova_posicao heroi, direcao
-        if !posicao_valida? mapa, nova_posicao 
+        nova_posicao = heroi.calcula_nova_posicao direcao
+        if !posicao_valida? mapa, nova_posicao.to_array 
             next
         end
-        mapa[heroi[0]][heroi[1]] = " "
-        mapa[nova_posicao[0]][nova_posicao[1]] = "H"
+        heroi.remove_do mapa
+        if mapa[nova_posicao.linha][nova_posicao.coluna] == "*"
+            remove mapa, nova_posicao, 4
+        end
+        nova_posicao.coloca_no mapa
         mapa = move_fantasmas mapa
         if jogador_perdeu? mapa
             game_over

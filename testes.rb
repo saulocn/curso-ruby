@@ -60,9 +60,16 @@ puts "#{nome} tem #{nome.size} caracteres"
 #puts nome+" tem " +nome.size.to_s + " caracteres"
 puts "Resultado"
 puts nome[5]
-=end
 
 for i in 1..10
     puts i
 end
 puts i
+
+=end
+
+bemvindo = -> (nome) {
+  puts "Bem vindo " + nome + "!"
+}
+bemvindo.("Saulo") # Bem vindo Guilherme!
+bemvindo.call("Saulo") # Bem vindo Guilherme!
